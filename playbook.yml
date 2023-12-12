@@ -2,7 +2,6 @@
 - name: Main Playbook
   hosts: ICBCAutomationSITServer
   gather_facts: yes
-  become: yes
   tasks:
     - name: Get the current date in YYYYMMDD format
       set_fact:
