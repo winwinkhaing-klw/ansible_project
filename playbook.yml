@@ -4,8 +4,15 @@
   gather_facts: yes
   tasks:
     - name: Get the current date in YYYYMMDD format
-      set_fact:
-        current_date: "{{ lookup('pipe', 'Get-Date -Format yyyyMMdd') }}"
+      win_shell: |
+        $currentDate = Get-Date -Format yyyyMMdd
+        Write-Output $currentDate
+      register: current_date_result
+
+    - name: Fail the task if getting the current date fails
+      fail:
+        msg: "Failed to get the current date"
+      when: current_date_result.rc != 0
 
     - name: Check if ZIP file exists
       win_stat:
