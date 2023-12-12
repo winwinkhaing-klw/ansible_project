@@ -22,9 +22,7 @@
       when: zip_file_exists_result.stat.exists
 
     - name: Extract ZIP file and check specific file
-      win_unzip:
-        src: "{{ zip_file_path }}"
-        dest: "{{ destination_path }}"
+      win_shell: "Expand-Archive -Path {{ zip_file_path }} -DestinationPath {{ destination_path }} -Force"
       register: extraction_result
       when: zip_file_exists_result.stat.exists
 
