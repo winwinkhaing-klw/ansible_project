@@ -1,0 +1,57 @@
+---
+- name: Main Playbook
+  hosts: ICBCAutomationSITServer
+  gather_facts: no
+  become: yes
+  tasks:
+    - name: Get the current date in YYYYMMDD format
+      set_fact:
+        current_date: "{{ lookup('pipe', 'Get-Date -Format yyyyMMdd') }}"
+
+    - name: Check if ZIP file exists
+      win_stat:
+        path: "{{ zip_file_path }}"
+      register: zip_file_exists_result
+
+    - name: Display information if ZIP file exists with the current date
+      debug:
+        msg: |
+          Host: ICBCAutomationSITServer
+          Folder: {{ destination_path }}
+          File: IA-{{ current_date }}-51-1.zip
+      when: zip_file_exists_result.stat.exists
+
+    - name: Extract ZIP file and check specific file
+      win_unzip:
+        src: "{{ zip_file_path }}"
+        dest: "{{ destination_path }}"
+      register: extraction_result
+      when: zip_file_exists_result.stat.exists
+
+    - name: Check if the specific file exists after extraction
+      win_stat:
+        path: "{{ destination_path }}/IA-{{ current_date }}-51-1.chk"
+      register: extracted_file_exists_result
+      when: extraction_result.changed
+
+    - name: Display message if the specific file exists after extraction
+      debug:
+        msg: "File exists: IA-{{ current_date }}-51-1.chk"
+      when: extracted_file_exists_result.stat.exists
+
+    - name: Display message if ZIP file does not exist
+      block:
+        - debug:
+            msg: "The file {{ zip_file_path }} does not exist"
+        - include_tasks: extract_and_copy.yml
+      when: not zip_file_exists_result.stat.exists
+
+    - name: Copy FOVA data from source to destination
+      win_copy:
+        src: "{{ fovadata_source_path }}"
+        dest: "{{ destination_path }}"
+      when: zip_file_exists_result.stat.exists
+
+    - name: Create check file
+      win_command: "echo Check File Content > {{ create_check_file_path }}/IA-{{ current_date }}-51-1.chk"
+      when: zip_file_exists_result.stat.exists
