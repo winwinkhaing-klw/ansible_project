@@ -1,7 +1,7 @@
 ---
 - name: Main Playbook
   hosts: ICBCAutomationSITServer
-  gather_facts: no
+  gather_facts: yes
   become: yes
   tasks:
     - name: Get the current date in YYYYMMDD format
@@ -53,5 +53,5 @@
       when: zip_file_exists_result.stat.exists
 
     - name: Create check file
-      win_command: "echo Check File Content > {{ create_check_file_path }}/IA-{{ current_date }}-51-1.chk"
+      win_shell: "echo Check File Content > {{ create_check_file_path }}/IA-{{ current_date }}-51-1.chk"
       when: zip_file_exists_result.stat.exists
