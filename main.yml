@@ -1,5 +1,1 @@
-zip_file_path: "E:/gtp/icbct/GCMS.succ/IA-{{ current_date }}-51-1.zip"
-extracted_file_path: "E:/gtp/icbct/GCMS.succ"
-fovadata_source_path: "E:/fovadata/IA-{{ current_date }}-51-1.zip" 
-create_check_file_path: "E:/CreateCheckFile/out/GCMS"  
-destination_path: "E:/gtp/icbct/GCMS.succ" 
+backup_path: "/data/projects/backup"
