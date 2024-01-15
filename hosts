@@ -1,16 +1,2 @@
 [web_servers]
 127.0.0.1 ansible_connection=local deprecation_warnings=false
-
-[ICBCAutomationSITServer]
-20.205.98.166 ansible_user=azadmin ansible_password=LVFQagPq3BvEWySDUcwfnbKsu2mkTj7ARG ansible_connection=winrm ansible_winrm_transport=basic ansible_port=5985 ansible_connection_plugin=winrm ansible_winrm_server_cert_validation=ignore ansible_winrm_kerberos_delegation=true ansible_winrm_operation_timeout_sec=120 ansible_winrm_read_timeout_sec=150
-
-[dbservers]
-apache2
-
-
-[all:vars]
-temp_file=/tmp/test2
-
-[web_servers:vars]
-temp_file=/tmp/test3
-
