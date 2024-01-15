@@ -1,61 +1,13 @@
 ---
-- name: Main Playbook
-  hosts: ICBCAutomationSITServer
-  gather_facts: yes
+- name: Greeting and Backup Playbook
+  hosts: awx-demo.local
   tasks:
-    - name: Get the current date in YYYYMMDD format
-      win_shell: |
-        $currentDate = Get-Date -Format yyyyMMdd
-        Write-Output $currentDate
-      register: current_date_result
+    - name: Create Backup Directory
+      file:
+        path: "/data/projects/backup"
+        state: directory
 
-    - name: Fail the task if getting the current date fails
-      fail:
-        msg: "Failed to get the current date"
-      when: current_date_result.rc != 0
-
-    - name: Check if ZIP file exists
-      win_stat:
-        path: "{{ zip_file_path }}"
-      register: zip_file_exists_result
-
-    - name: Display information if ZIP file exists with the current date
-      debug:
-        msg: |
-          Host: ICBCAutomationSITServer
-          Folder: {{ destination_path }}
-          File: IA-{{ current_date }}-51-1.zip
-      when: zip_file_exists_result.stat.exists
-
-    - name: Extract ZIP file and check specific file
-      win_shell: "Expand-Archive -Path {{ zip_file_path }} -DestinationPath {{ destination_path }} -Force"
-      register: extraction_result
-      when: zip_file_exists_result.stat.exists
-
-    - name: Check if the specific file exists after extraction
-      win_stat:
-        path: "{{ destination_path }}/IA-{{ current_date }}-51-1.chk"
-      register: extracted_file_exists_result
-      when: extraction_result.changed
-
-    - name: Display message if the specific file exists after extraction
-      debug:
-        msg: "File exists: IA-{{ current_date }}-51-1.chk"
-      when: extracted_file_exists_result.stat.exists
-
-    - name: Display message if ZIP file does not exist
-      block:
-        - debug:
-            msg: "The file {{ zip_file_path }} does not exist"
-        - include_tasks: extract_and_copy.yml
-      when: not zip_file_exists_result.stat.exists
-
-    - name: Copy FOVA data from source to destination
-      win_copy:
-        src: "{{ fovadata_source_path }}"
-        dest: "{{ destination_path }}"
-      when: zip_file_exists_result.stat.exists
-
-    - name: Create check file
-      win_shell: "echo Check File Content > {{ create_check_file_path }}/IA-{{ current_date }}-51-1.chk"
-      when: zip_file_exists_result.stat.exists
+    - name: Create Greeting File
+      copy:
+        content: "Hello, welcome to AWX!"
+        dest: "/data/projects/backup/greeting.txt"
